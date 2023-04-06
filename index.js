@@ -20,16 +20,38 @@ client.connect((err) => {
   // perform actions on the collection object
   client.close();
 });
-
-
-
 async function run() {
   try {
     await client.connect();
-  ;
-    
+    const eventBlogsCollection = client.db("Uiu").collection("EventBlogs");
+    const recentEventsCollection = client.db("Uiu").collection("RecentEvents");
+    const upcomingEventsCollection = client
+      .db("Uiu")
+      .collection("UpcomingEvents");
 
+    // Get EventBlogs here
+    app.get("/eventblogs", async (req, res) => {
+      const quary = {};
+      const cursor = eventBlogsCollection.find(quary);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
+    // Get All Recent Event
+    app.get("/recentEvents", async (req, res) => {
+      const quary = {};
+      const cursor = recentEventsCollection.find(quary);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // Get All Upcoming Events
+    app.get("/upcomingEvents", async (req, res) => {
+      const quary = {};
+      const cursor = upcomingEventsCollection.find(quary);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
   } finally {
   }
 }
