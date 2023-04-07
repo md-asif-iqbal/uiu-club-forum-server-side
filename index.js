@@ -28,6 +28,9 @@ async function run() {
     const upcomingEventsCollection = client
       .db("Uiu")
       .collection("UpcomingEvents");
+    const EventRegistrationCollection = client
+      .db("Uiu")
+      .collection("EventRegistration");
 
     // Get EventBlogs here
     app.get("/eventblogs", async (req, res) => {
@@ -51,6 +54,12 @@ async function run() {
       const cursor = upcomingEventsCollection.find(quary);
       const result = await cursor.toArray();
       res.send(result);
+    });
+
+    app.post("/eventRegistration", async (req, res) => {
+      const quary = req.body;
+      const registration = await EventRegistrationCollection.insertOne(quary);
+      res.send(registration);
     });
   } finally {
   }
