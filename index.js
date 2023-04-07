@@ -61,6 +61,12 @@ async function run() {
       const registration = await EventRegistrationCollection.insertOne(quary);
       res.send(registration);
     });
+    app.get("/eventRegistration", async (req, res) => {
+      const quary = {};
+      const cursor = EventRegistrationCollection.find(quary);
+      const reg = await cursor.toArray();
+      res.send(reg);
+    });
   } finally {
   }
 }
