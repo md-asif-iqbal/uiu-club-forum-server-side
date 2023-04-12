@@ -144,6 +144,12 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
+    // New blogs Posted here
+     app.post("/postblogs", async (req, res) => {
+       const query = req.body;
+       const blogs = await eventBlogsCollection.insertOne(query);
+       res.send(blogs);
+     });
 
     // Get All Recent Event
     app.get("/recentEvents", async (req, res) => {
