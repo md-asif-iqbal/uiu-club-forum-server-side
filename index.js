@@ -37,8 +37,14 @@ async function run() {
     const AnnouncmentCollection = client.db("Uiu").collection("Announcment");
     const BlogCollection = client.db("Uiu").collection("blogs");
     const FaqCollection = client.db("Uiu").collection("Faq");
+
+    const activitesCollection = client.db("Uiu").collection("Activites")
+
+
+
     const ForumClubCollection = client.db("Uiu").collection("Forum&Club");
     const allRequestCollection = client.db("Uiu").collection("AllReques");
+
 
     // start
 
@@ -107,6 +113,12 @@ async function run() {
       res.send(booking);
     });
 
+    app.get('/service', async (req, res) => {
+      const user = req.body;
+      const service = await ForumClubCollection.find(user).toArray();
+      res.send(service);
+    });
+
     app.put("/user/service/:email", async (req, res) => {
       const email = req.params.email;
       const userInfo = req.body;
@@ -168,7 +180,25 @@ async function run() {
       return res.send(result);
     });
 
-    // announcment
+
+    // Actives  Here 
+
+    app.post("/activites", async (req, res) => {
+      const query = req.body;
+      const faqPost = await activitesCollection.insertOne(query)
+      res.send(faqPost)
+    })
+
+    app.get("/myActivites", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const cursor = activitesCollection.find(query);
+      const result = await cursor.toArray();
+      return res.send(result);
+    });
+
+    // announcment 
+
 
     app.post("/announcment", async (req, res) => {
       const query = req.body;
