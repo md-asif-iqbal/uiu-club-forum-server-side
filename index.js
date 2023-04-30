@@ -22,10 +22,6 @@ client.connect((err) => {
   // perform actions on the collection object
   client.close();
 });
-
-const stripe = require('stripe')('sk_test_51LXS98B5Y3AeAE8ixEr3XbAzakqMdCNqxsU9YIZyhx8IaSGdcIaHNUdF4zPSaludDIIwz7kxSsnL6bcAkD4EUURB00BKYOJvq7');
-
-
 async function run() {
   try {
     await client.connect();
@@ -42,14 +38,11 @@ async function run() {
     const BlogCollection = client.db("Uiu").collection("blogs");
     const FaqCollection = client.db("Uiu").collection("Faq");
 
-    const activitesCollection = client.db("Uiu").collection("Activites")
-    const customMemberCollection = client.db("Uiu").collection("customMember")
-
-
+    const activitesCollection = client.db("Uiu").collection("Activites");
 
     const ForumClubCollection = client.db("Uiu").collection("Forum&Club");
     const allRequestCollection = client.db("Uiu").collection("AllReques");
-
+    const customMemberCollection = client.db("Uiu").collection("customMember");
 
     // start
 
@@ -104,24 +97,12 @@ async function run() {
       return res.send(result);
     });
 
-
-    // Custom member 
-
-    app.post("/custom", async (req, res) => {
-      const query = req.body;
-      const service = await customMemberCollection.insertOne(query)
-      res.send(service)
-    })
-
-    app.get('/custom', async (req, res) => {
+    // Club & Forum Data
+    app.get("/service", async (req, res) => {
       const user = req.body;
-      const service = await customMemberCollection.find(user).toArray();
-      res.send(service);
+      const users = await ForumClubCollection.find(user).toArray();
+      res.send(users);
     });
-
-    // Club & Forum Data 
-
-
 
     app.get("/service/:id", async (req, res) => {
       const id = req.params.id;
@@ -130,7 +111,7 @@ async function run() {
       res.send(booking);
     });
 
-    app.get('/service', async (req, res) => {
+    app.get("/service", async (req, res) => {
       const user = req.body;
       const service = await ForumClubCollection.find(user).toArray();
       res.send(service);
@@ -162,6 +143,19 @@ async function run() {
     app.post("/service", async (req, res) => {
       const query = req.body;
       const service = await ForumClubCollection.insertOne(query);
+      res.send(service);
+    });
+
+    // new member
+    app.post("/custom", async (req, res) => {
+      const query = req.body;
+      const service = await customMemberCollection.insertOne(query);
+      res.send(service);
+    });
+
+    app.get("/custom", async (req, res) => {
+      const user = req.body;
+      const service = await customMemberCollection.find(user).toArray();
       res.send(service);
     });
 
@@ -197,14 +191,13 @@ async function run() {
       return res.send(result);
     });
 
-
-    // Actives  Here 
+    // Actives  Here
 
     app.post("/activites", async (req, res) => {
       const query = req.body;
-      const faqPost = await activitesCollection.insertOne(query)
-      res.send(faqPost)
-    })
+      const faqPost = await activitesCollection.insertOne(query);
+      res.send(faqPost);
+    });
 
     app.get("/myActivites", async (req, res) => {
       const email = req.query.email;
@@ -214,8 +207,7 @@ async function run() {
       return res.send(result);
     });
 
-    // announcment 
-
+    // announcment
 
     app.post("/announcment", async (req, res) => {
       const query = req.body;
