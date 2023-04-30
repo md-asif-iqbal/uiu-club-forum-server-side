@@ -20,6 +20,10 @@ client.connect((err) => {
   // perform actions on the collection object
   client.close();
 });
+
+const stripe = require('stripe')('sk_test_51LXS98B5Y3AeAE8ixEr3XbAzakqMdCNqxsU9YIZyhx8IaSGdcIaHNUdF4zPSaludDIIwz7kxSsnL6bcAkD4EUURB00BKYOJvq7');
+
+
 async function run() {
   try {
     await client.connect();
@@ -40,6 +44,7 @@ async function run() {
     const ForumClubCollection = client.db("Uiu").collection("Forum&Club")
     const allRequestCollection = client.db("Uiu").collection("AllReques")
     const activitesCollection = client.db("Uiu").collection("Activites")
+    const customMemberCollection = client.db("Uiu").collection("customMember")
 
 
 
@@ -88,6 +93,20 @@ async function run() {
       const cursor = userCollection.find(query);
       const result = await cursor.toArray();
       return res.send(result);
+    });
+
+    // Custom member 
+
+    app.post("/custom", async (req, res) => {
+      const query = req.body;
+      const service = await customMemberCollection.insertOne(query)
+      res.send(service)
+    })
+
+    app.get('/custom', async (req, res) => {
+      const user = req.body;
+      const service = await customMemberCollection.find(user).toArray();
+      res.send(service);
     });
 
     // Club & Forum Data 
