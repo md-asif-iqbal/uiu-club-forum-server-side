@@ -3,7 +3,9 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 // const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
+const stripe = require("stripe")(
+  "sk_test_51LXS98B5Y3AeAE8ixEr3XbAzakqMdCNqxsU9YIZyhx8IaSGdcIaHNUdF4zPSaludDIIwz7kxSsnL6bcAkD4EUURB00BKYOJvq7"
+);
 const app = express();
 const port = process.env.PORT || 8000;
 app.use(cors());
@@ -36,28 +38,37 @@ async function run() {
       .db("Uiu")
       .collection("EventRegistration");
     const userCollection = client.db("Uiu").collection("profile");
-    const AnnouncmentCollection = client
-      .db("Uiu")
-      .collection("Announcment");
+    const AnnouncmentCollection = client.db("Uiu").collection("Announcment");
     const BlogCollection = client.db("Uiu").collection("blogs");
     const FaqCollection = client.db("Uiu").collection("Faq");
-    const ForumClubCollection = client.db("Uiu").collection("Forum&Club")
-    const allRequestCollection = client.db("Uiu").collection("AllReques")
+
     const activitesCollection = client.db("Uiu").collection("Activites")
     const customMemberCollection = client.db("Uiu").collection("customMember")
 
 
 
+    const ForumClubCollection = client.db("Uiu").collection("Forum&Club");
+    const allRequestCollection = client.db("Uiu").collection("AllReques");
+
+
     // start
 
+    // admin
+    // admin here========
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userCollection.findOne({ email: email });
+      const isAdmin = user.role === "admin";
+      res.send({ admin: isAdmin });
+    });
 
-    app.put('/user/:email', async (req, res) => {
+    app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const user = req.body;
       const filter = { email: email };
       const options = { upsert: true };
       const updateDoc = {
-        $set: user
+        $set: user,
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
     });
@@ -85,8 +96,6 @@ async function run() {
       res.send(users);
     });
 
-
-
     app.get("/myProfile", async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
@@ -94,6 +103,7 @@ async function run() {
       const result = await cursor.toArray();
       return res.send(result);
     });
+
 
     // Custom member 
 
@@ -111,9 +121,11 @@ async function run() {
 
     // Club & Forum Data 
 
+
+
     app.get("/service/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) }
+      const query = { _id: new ObjectId(id) };
       const booking = await ForumClubCollection.findOne(query);
       res.send(booking);
     });
@@ -149,17 +161,17 @@ async function run() {
 
     app.post("/service", async (req, res) => {
       const query = req.body;
-      const service = await ForumClubCollection.insertOne(query)
-      res.send(service)
-    })
+      const service = await ForumClubCollection.insertOne(query);
+      res.send(service);
+    });
 
-    // Blog Section 
+    // Blog Section
 
     app.post("/blog", async (req, res) => {
       const query = req.body;
-      const blogPost = await BlogCollection.insertOne(query)
-      res.send(blogPost)
-    })
+      const blogPost = await BlogCollection.insertOne(query);
+      res.send(blogPost);
+    });
 
     app.get("/myBlog", async (req, res) => {
       const email = req.query.email;
@@ -169,15 +181,13 @@ async function run() {
       return res.send(result);
     });
 
-
-
-    // FaQ Section 
+    // FaQ Section
 
     app.post("/faq", async (req, res) => {
       const query = req.body;
-      const faqPost = await FaqCollection.insertOne(query)
-      res.send(faqPost)
-    })
+      const faqPost = await FaqCollection.insertOne(query);
+      res.send(faqPost);
+    });
 
     app.get("/myfaq", async (req, res) => {
       const email = req.query.email;
@@ -186,6 +196,7 @@ async function run() {
       const result = await cursor.toArray();
       return res.send(result);
     });
+
 
     // Actives  Here 
 
@@ -205,11 +216,12 @@ async function run() {
 
     // announcment 
 
+
     app.post("/announcment", async (req, res) => {
       const query = req.body;
       const announcment = await AnnouncmentCollection.insertOne(query);
       res.send(announcment);
-    })
+    });
 
     app.get("/myAnnouncment", async (req, res) => {
       const email = req.query.email;
@@ -219,19 +231,19 @@ async function run() {
       return res.send(result);
     });
 
-    // Payment System 
+    // Payment System
 
-    app.post('/create-payment-intent', async (req, res) => {
+    app.post("/create-payment-intent", async (req, res) => {
       const service = req.body;
       const price = service.amount;
       const amount = price * 100;
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount,
-        currency: 'usd',
-        payment_method_types: ['card']
-      })
-      res.send({ clientSecret: paymentIntent.client_secret })
-    })
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.send({ clientSecret: paymentIntent.client_secret });
+    });
 
     // All Request Section ===
 
@@ -239,9 +251,9 @@ async function run() {
       const query = req.body;
       const allRequest = await allRequestCollection.insertOne(query);
       res.send(allRequest);
-    })
+    });
 
-    app.get('/allrequest', async (req, res) => {
+    app.get("/allrequest", async (req, res) => {
       const user = req.body;
       const users = await allRequestCollection.find(user).toArray();
       res.send(users);
@@ -252,8 +264,7 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const deleteReq = await allRequestCollection.deleteOne(query);
       res.send(deleteReq);
-    })
-
+    });
 
     // end
     // Get EventBlogs here
@@ -285,7 +296,13 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
+    app.post("/upcomingEvents", async (req, res) => {
+      const quary = req.body;
+      const eventPost = await upcomingEventsCollection.insertOne(quary);
+      res.send(eventPost);
+    });
 
+    // Event Registration
     app.post("/eventRegistration", async (req, res) => {
       const quary = req.body;
       const registration = await EventRegistrationCollection.insertOne(quary);
