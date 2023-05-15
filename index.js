@@ -159,7 +159,7 @@ async function run() {
       res.send(service);
     });
 
-    // Blog Section .
+ 
 
     app.post("/blog", async (req, res) => {
       const query = req.body;
