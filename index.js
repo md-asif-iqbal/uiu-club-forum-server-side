@@ -281,7 +281,8 @@ async function run() {
       res.send(result);
     });
 
-    // Get All Upcoming Events
+
+    // Get All Upcoming Eventss
     app.get("/upcomingEvents", async (req, res) => {
       const quary = {};
       const cursor = upcomingEventsCollection.find(quary);
